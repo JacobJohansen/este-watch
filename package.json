@@ -8,9 +8,9 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "semver": "~2.2.1",
-    "colors": "~0.6.2",
-    "glob": "~3.2.8"
+    "semver": "~4.0.3",
+    "colors": "~1.0.2",
+    "glob": "~4.0.6"
   },
   "devDependencies": {
     "gulp": "~3.4.0",
