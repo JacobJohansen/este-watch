@@ -114,6 +114,77 @@ describe('index', function() {
       }, SAFE_TIMEOUT);
     });
   });
+
+  describe('(filter and ignore files by pattern)', function() {
+    beforeEach(function() {
+      setTimeout(function() {
+        fs.writeFileSync(fixturesDir + '/test.include', 'foo');
+      }, 100);
+
+      setTimeout(function() {
+        fs.writeFileSync(fixturesDir + '/test.exclude', 'bar');
+      }, 200);
+    });
+    it('should only include filtered files', function(done) {
+      var files = [];
+      var watcher = esteWatch([fixturesDir], function(e) {
+        files.push(e);
+      }, { filter: /\.include$/ });
+
+      watcher.start();
+
+      setTimeout(function() {
+        assert.strictEqual(files.length, 1);
+        assert.equal(files[0].filepath, fixturesDir + '/test.include');
+        done();
+      }, SAFE_TIMEOUT);
+    });
+
+    it('should ignore files by pattern ', function(done) {
+      var files = [];
+      var watcher = esteWatch([fixturesDir], function(e) {
+        files.push(e);
+      }, { ignoreFiles: /\.exclude$/ });
+
+      watcher.start();
+
+      setTimeout(function() {
+        assert.strictEqual(files.length, 1);
+        assert.equal(files[0].filepath, fixturesDir + '/test.include');
+        done();
+      }, SAFE_TIMEOUT);
+    });
+  });
+
+  describe('(ignore directories by pattern)', function() {
+    it('should ignore directories by pattern ', function(done) {
+      setTimeout(function() {
+        fs.mkdirSync(fixturesDir + '/include');
+        fs.mkdirSync(fixturesDir + '/exclude');
+      }, 100);
+
+      setTimeout(function() {
+        fs.writeFileSync(fixturesDir + '/exclude/test1', 'foo');
+      }, 200);
+
+      setTimeout(function() {
+        fs.writeFileSync(fixturesDir + '/include/test2', 'foo');
+      }, 300);
+
+      var files = [];
+      var watcher = esteWatch([fixturesDir], function(e) {
+        files.push(e);
+      }, { ignoreDirectories: /exclude/ });
+
+      watcher.start();
+
+      setTimeout(function() {
+        assert.strictEqual(files.length, 1);
+        assert.equal(files[0].filepath, fixturesDir + '/include/test2');
+        done();
+      }, SAFE_TIMEOUT);
+    });
+  });
 });
 
 // TODO: Test for Windows locked file. Need test case.

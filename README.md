@@ -11,19 +11,41 @@ There are zilions Node.js file watchers. No one is perfect. The most feature ric
 This watcher uses only fs.watch so it has limited functionality (can't detect deleted files), but it works. And it's fast
 even for thousands of files. Read more [here](https://github.com/wearefractal/glob-watcher/issues/1#issuecomment-31232567) and [here](http://tech.nitoyon.com/en/blog/2013/10/10/grunt-watch-slow/).
 
-## Example
+## Basic Usage
+
+Create a watcher to watch all files in the directories "foo" and "bar":
 
 ```javascript
+function onWatch(file) {
+  // Relative path to file that was changed or created
+  console.log(file.filepath);
+
+  // File Extension
+  console.log(file.extension);
+}
+
 var esteWatch = require('este-watch');
 
-esteWatch(['foo', 'bar'], function(e) {
-  switch (e.extension) {
-    case 'js':
-      console.log(e.filepath);
-      break
-    case 'css':
-      console.log(e.filepath);
-      break;
-  }
+var watcher = esteWatch(['foo', 'bar'], onWatch);
+
+// Start the watcher
+watcher.start()
+```
+
+## Options
+
+A third argument can be passed to the esteWatch function to specify options.
+
+Three options are available:
+
+* filter: (RegExp) only fire watcher callback for files where the full relative filepath matches this pattern
+* ignoreFiles: (RegExp) prevent watcher callback from firing for files where the full relative filepath matches this pattern
+* ignoreDirectories: (RegExp) prevent watcher from even starting for directories where the full relative directory path matches this pattern
+
+```javascript
+esteWatch(['foo', 'bar'], onWatch, {
+  filter: /\.js$/,
+  ignoreFiles: /\.min\.js$/,
+  ignoreDirectories: /node_modules/,
 }).start();
 ```
