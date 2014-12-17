@@ -136,6 +136,7 @@ describe('index', function() {
       setTimeout(function() {
         assert.strictEqual(files.length, 1);
         assert.equal(files[0].filepath, fixturesDir + '/test.include');
+        watcher.dispose();
         done();
       }, SAFE_TIMEOUT);
     });
@@ -151,6 +152,7 @@ describe('index', function() {
       setTimeout(function() {
         assert.strictEqual(files.length, 1);
         assert.equal(files[0].filepath, fixturesDir + '/test.include');
+        watcher.dispose();
         done();
       }, SAFE_TIMEOUT);
     });
@@ -181,6 +183,7 @@ describe('index', function() {
       setTimeout(function() {
         assert.strictEqual(files.length, 1);
         assert.equal(files[0].filepath, fixturesDir + '/include/test2');
+        watcher.dispose();
         done();
       }, SAFE_TIMEOUT);
     });
