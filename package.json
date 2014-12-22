@@ -1,6 +1,6 @@
 {
   "name": "este-watch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Daniel Steigerwald",
   "description": "Fast and reliable files watcher.",
   "main": "./lib",
