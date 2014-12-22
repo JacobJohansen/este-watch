@@ -115,16 +115,8 @@ describe('index', function() {
     });
   });
 
-  describe('(filter and ignore files by pattern)', function() {
-    beforeEach(function() {
-      setTimeout(function() {
-        fs.writeFileSync(fixturesDir + '/test.include', 'foo');
-      }, 100);
-
-      setTimeout(function() {
-        fs.writeFileSync(fixturesDir + '/test.exclude', 'bar');
-      }, 200);
-    });
+  describe('(filter and ignore by pattern)', function() {
+    this.timeout(3000);
     it('should only include filtered files', function(done) {
       var files = [];
       var watcher = esteWatch([fixturesDir], function(e) {
@@ -134,11 +126,17 @@ describe('index', function() {
       watcher.start();
 
       setTimeout(function() {
-        assert.strictEqual(files.length, 1);
-        assert.equal(files[0].filepath, fixturesDir + '/test.include');
-        watcher.dispose();
-        done();
-      }, SAFE_TIMEOUT);
+        fs.writeFileSync(fixturesDir + '/test.include', 'foo');
+        setTimeout(function() {
+          fs.writeFileSync(fixturesDir + '/test.exclude', 'bar');
+          setTimeout(function() {
+            watcher.dispose();
+            assert.strictEqual(files.length, 1);
+            assert.equal(files[0].filepath, fixturesDir + '/test.include');
+            done();
+          }, 500);
+        }, 500);
+      }, 500);
     });
 
     it('should ignore files by pattern ', function(done) {
@@ -150,42 +148,46 @@ describe('index', function() {
       watcher.start();
 
       setTimeout(function() {
-        assert.strictEqual(files.length, 1);
-        assert.equal(files[0].filepath, fixturesDir + '/test.include');
-        watcher.dispose();
-        done();
-      }, SAFE_TIMEOUT);
+        fs.writeFileSync(fixturesDir + '/test.include', 'foo');
+        setTimeout(function() {
+          fs.writeFileSync(fixturesDir + '/test.exclude', 'bar');
+          setTimeout(function() {
+            watcher.dispose();
+            assert.strictEqual(files.length, 1);
+            assert.equal(files[0].filepath, fixturesDir + '/test.include');
+            done();
+          }, 500);
+        }, 500);
+      }, 500);
     });
-  });
 
-  describe('(ignore directories by pattern)', function() {
     it('should ignore directories by pattern ', function(done) {
       setTimeout(function() {
         fs.mkdirSync(fixturesDir + '/include');
         fs.mkdirSync(fixturesDir + '/exclude');
-      }, 100);
 
-      setTimeout(function() {
-        fs.writeFileSync(fixturesDir + '/exclude/test1', 'foo');
-      }, 200);
+        var files = [];
+        var watcher = esteWatch([fixturesDir], function(e) {
+          files.push(e);
+        }, { ignoreDirectories: /exclude/ });
 
-      setTimeout(function() {
-        fs.writeFileSync(fixturesDir + '/include/test2', 'foo');
-      }, 300);
+        watcher.start();
 
-      var files = [];
-      var watcher = esteWatch([fixturesDir], function(e) {
-        files.push(e);
-      }, { ignoreDirectories: /exclude/ });
+        setTimeout(function() {
+          fs.writeFileSync(fixturesDir + '/exclude/test1', 'foo');
 
-      watcher.start();
+          setTimeout(function() {
+            fs.writeFileSync(fixturesDir + '/include/test2', 'foo');
 
-      setTimeout(function() {
-        assert.strictEqual(files.length, 1);
-        assert.equal(files[0].filepath, fixturesDir + '/include/test2');
-        watcher.dispose();
-        done();
-      }, SAFE_TIMEOUT);
+            setTimeout(function() {
+              watcher.dispose();
+              assert.strictEqual(files.length, 1);
+              assert.equal(files[0].filepath, fixturesDir + '/include/test2');
+              done();
+            }, 500);
+          }, 500);
+        }, 500);
+      }, 500);
     });
   });
 });
